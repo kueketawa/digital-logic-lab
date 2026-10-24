@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Logic Lab</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===== PANEL TOGGLE BUTTON (always visible) ===== -->
+    <button id="panel-toggle" aria-label="Buka/tutup panel" aria-expanded="true">
+      <span class="toggle-icon">&#9776;</span>
+    </button>
+
+    <!-- ===== LEFT PANEL ===== -->
+    <aside id="panel">
+      <h1 class="panel-title">Digital Logic Lab</h1>
+      <p class="panel-subtitle">Simulator Gerbang Logika</p>
+
+      <section class="panel-section">
+        <h2 class="section-label">Input / Output</h2>
+        <button class="comp-btn" data-type="switch">
+          <span class="comp-icon">⏻</span> Saklar
+        </button>
+        <button class="comp-btn" data-type="led">
+          <span class="comp-icon">💡</span> LED
+        </button>
+      </section>
+
+      <section class="panel-section">
+        <h2 class="section-label">Gerbang Logika</h2>
+        <button class="comp-btn" data-type="and">
+          <span class="comp-icon gate-icon">AND</span>
+        </button>
+        <button class="comp-btn" data-type="or">
+          <span class="comp-icon gate-icon">OR</span>
+        </button>
+        <button class="comp-btn" data-type="not">
+          <span class="comp-icon gate-icon">NOT</span>
+        </button>
+        <button class="comp-btn" data-type="nand">
+          <span class="comp-icon gate-icon">NAND</span>
+        </button>
+        <button class="comp-btn" data-type="nor">
+          <span class="comp-icon gate-icon">NOR</span>
+        </button>
+        <button class="comp-btn" data-type="xor">
+          <span class="comp-icon gate-icon">XOR</span>
+        </button>
+        <button class="comp-btn" data-type="xnor">
+          <span class="comp-icon gate-icon">XNOR</span>
+        </button>
+      </section>
+
+      <section class="panel-section">
+        <h2 class="section-label">Riwayat</h2>
+        <div class="history-btns">
+          <button id="btn-undo" class="action-btn action-btn-blue" disabled title="Urungkan (Ctrl+Z)">↩ Urungkan</button>
+          <button id="btn-redo" class="action-btn action-btn-blue" disabled title="Ulangi (Ctrl+Y)">↪ Ulangi</button>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <h2 class="section-label">Workspace</h2>
+        <button id="btn-clear" class="action-btn">🗑 Bersihkan Papan</button>
+        <button id="btn-center" class="action-btn action-btn-blue">⊙ Pusatkan Tampilan</button>
+        <button id="btn-truth" class="action-btn action-btn-blue">⊞ Tabel Kebenaran</button>
+      </section>
+
+      <!-- Status / error messages shown here -->
+      <div id="status-msg" class="status-msg" aria-live="polite"></div>
+    </aside>
+
+    <!-- Overlay backdrop — tapping it closes the panel on mobile -->
+    <div id="panel-backdrop"></div>
+
+    <!-- ===== TRUTH TABLE PANEL ===== -->
+    <aside id="truth-panel" aria-label="Tabel Kebenaran">
+      <div class="truth-header">
+        <h2 class="truth-title">Tabel Kebenaran</h2>
+        <button id="truth-close" aria-label="Tutup tabel" title="Tutup">✕</button>
+      </div>
+      <div id="truth-body">
+        <!-- Populated by JS -->
+      </div>
+    </aside>
+
+    <!-- ===== CARA PAKAI (Help) PANEL ===== -->
+    <aside id="help-panel" aria-label="Cara Pakai">
+      <div class="help-header">
+        <div>
+          <h2 class="help-title">Cara Pakai</h2>
+          <p class="help-subtitle">Rakit rangkaian pertamamu dalam 4 langkah:</p>
+        </div>
+        <button id="help-toggle" aria-label="Tutup panduan" title="Tutup panduan">✕</button>
+      </div>
+
+      <ol class="help-steps">
+        <li>
+          <span class="step-badge">1</span>
+          <span class="step-text"><strong>Tambah</strong>: Klik Saklar, LED, dan gerbang (misalnya AND) di panel kiri.</span>
+        </li>
+        <li>
+          <span class="step-badge">2</span>
+          <span class="step-text"><strong>Sambung</strong>: Klik lingkaran kanan sebuah komponen (output), lalu lingkaran kiri komponen berikutnya (input). Contoh: Saklar → AND → LED.</span>
+        </li>
+        <li>
+          <span class="step-badge">3</span>
+          <span class="step-text"><strong>Coba</strong>: Klik Saklar untuk ganti 0 atau 1. LED menyala jika hasilnya 1, dan kabel yang terang membawa sinyal 1.</span>
+        </li>
+        <li>
+          <span class="step-badge">4</span>
+          <span class="step-text"><strong>Periksa</strong>: Buka Tabel Kebenaran untuk melihat semua kombinasi saklar.</span>
+        </li>
+      </ol>
+
+      <div class="help-tips">
+        <p class="tips-heading">Tips</p>
+        <ul>
+          <li>Seret komponen untuk memindahkannya.</li>
+          <li>Seret gerbang ke atas kabel untuk menyisipkannya.</li>
+          <li>Seret area kosong untuk menggeser papan.</li>
+          <li>Hapus: pilih lalu tekan Delete, atau klik ×.</li>
+          <li>Ctrl+Z urungkan, Ctrl+Y ulangi.</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- ===== WORKSPACE ===== -->
+    <main id="workspace">
+      <!-- Help re-open button, shown only when help panel is collapsed -->
+      <button id="help-open" aria-label="Buka panduan" title="Buka Cara Pakai">?</button>
+      <p id="hint-text">Tambahkan komponen dari panel untuk memulai</p>
+
+      <!--
+        #canvas is the infinite panning surface.
+        Components and the SVG overlay are children of this div.
+        It is moved via CSS transform: translate(panX, panY).
+      -->
+      <div id="canvas">
+        <!-- SVG overlay: wires are drawn here, behind component nodes -->
+        <svg id="wire-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+        <!-- Component DOM nodes are appended here dynamically by script.js -->
+      </div>
+
+      <!-- Synthetic scrollbars — controlled by JS, sync with pan state -->
+      <div id="sb-h-track"><div id="sb-h-thumb"></div></div>
+      <div id="sb-v-track"><div id="sb-v-thumb"></div></div>
+    </main>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

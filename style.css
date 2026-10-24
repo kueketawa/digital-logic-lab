@@ -1,0 +1,1027 @@
+/* =====================================================
+   Digital Logic Lab — style.css
+   Dark lab theme with blue & neon-green accents
+   ===================================================== */
+
+/* ---------- CSS Custom Properties ---------- */
+:root {
+  --bg-app:        #0d1117;
+  --bg-panel:      #161b22;
+  --bg-surface:    #1c2230;
+  --bg-component:  #1e2a3a;
+  --border:        #30363d;
+  --border-focus:  #388bfd;
+
+  --text-primary:  #e6edf3;
+  --text-muted:    #8b949e;
+  --text-label:    #58a6ff;
+
+  --accent-blue:   #388bfd;
+  --accent-green:  #39d353;
+  --accent-red:    #f85149;
+  --accent-yellow: #d29922;
+
+  --wire-on:       #39d353;
+  --wire-off:      #2d4a3e;
+  --wire-selected: #f0a500;
+
+  --led-off:       #1c2230;
+  --led-on:        #39d353;
+  --led-glow:      #39d35388;
+
+  --switch-off:    #2d4a3e;
+  --switch-on:     #39d353;
+
+  --panel-width:   200px;
+
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+
+  --transition: 0.18s ease;
+}
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg-app);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+/* ---------- App Layout ---------- */
+#app {
+  display: flex;
+  height: 100vh;
+  position: relative;
+}
+
+/* ---------- Panel Toggle Button ---------- */
+#panel-toggle {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 300;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), border-color var(--transition),
+              left var(--transition);
+}
+
+#panel-toggle:hover {
+  background: var(--bg-surface);
+  border-color: var(--accent-blue);
+}
+
+/* When panel is open on wide screens, push the toggle along with it */
+#app:not(.panel-collapsed) #panel-toggle {
+  left: calc(var(--panel-width) + 12px);
+}
+
+/* ---------- Left Panel ---------- */
+#panel {
+  width: var(--panel-width);
+  min-width: var(--panel-width);
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  /* top padding leaves room for the toggle button */
+  padding: 24px 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  user-select: none;
+  /* smooth slide in/out */
+  transition: transform var(--transition), box-shadow var(--transition);
+  flex-shrink: 0;
+  z-index: 200;
+}
+
+/* Collapsed: slide the panel fully off-screen to the left */
+#app.panel-collapsed #panel {
+  transform: translateX(calc(-1 * var(--panel-width)));
+  /* keep it in flow so workspace doesn't jump — use margin trick instead */
+}
+
+/*
+ * On wide screens the panel is in-flow (flex child).
+ * When collapsed, we pull it out via negative margin so the workspace expands.
+ */
+#app.panel-collapsed #panel {
+  margin-left: calc(-1 * var(--panel-width));
+}
+
+.panel-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+.panel-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.section-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Component add buttons */
+.comp-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.comp-btn:hover {
+  background: var(--bg-component);
+  border-color: var(--accent-blue);
+  transform: translateX(2px);
+}
+
+.comp-btn:active {
+  transform: translateX(0);
+}
+
+.comp-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.gate-icon {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 11px;
+  background: var(--bg-app);
+  border: 1px solid var(--accent-blue);
+  color: var(--accent-blue);
+  border-radius: 4px;
+  padding: 1px 5px;
+  letter-spacing: 0.05em;
+}
+
+/* Workspace action buttons */
+.action-btn {
+  padding: 8px 10px;
+  background: transparent;
+  color: var(--accent-red);
+  border: 1px solid var(--accent-red);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  transition: background var(--transition), color var(--transition);
+}
+
+.action-btn:hover {
+  background: var(--accent-red);
+  color: #fff;
+}
+
+.action-btn-blue {
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+}
+
+.action-btn-blue:hover {
+  background: var(--accent-blue);
+  color: #fff;
+}
+
+/* Undo / Redo button pair */
+.history-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.history-btns .action-btn {
+  flex: 1;
+  font-size: 11px;
+  padding: 7px 4px;
+  text-align: center;
+}
+
+.history-btns .action-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Status / error message */
+.status-msg {
+  margin-top: auto;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--accent-yellow);
+  background: #1c1a0e;
+  border: 1px solid var(--accent-yellow);
+  border-radius: var(--radius-sm);
+  min-height: 36px;
+  display: none;
+  line-height: 1.5;
+}
+
+.status-msg.visible {
+  display: block;
+}
+
+/* ---------- Panel overlay backdrop (mobile only) ---------- */
+#panel-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 150;
+}
+
+/* ---------- Narrow-screen (overlay) behaviour ---------- */
+@media (max-width: 767px) {
+  /* Panel floats over the workspace as an overlay drawer */
+  #panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 200;
+    /* Start collapsed on mobile */
+    transform: translateX(calc(-1 * var(--panel-width)));
+    transition: transform var(--transition), box-shadow var(--transition);
+    box-shadow: none;
+  }
+
+  /* Collapsed state: off-screen */
+  #app.panel-collapsed #panel {
+    transform: translateX(calc(-1 * var(--panel-width)));
+    margin-left: 0; /* no margin adjustment needed — panel is fixed */
+    box-shadow: none;
+  }
+
+  /* Open state: slide in, show backdrop */
+  #app:not(.panel-collapsed) #panel {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.6);
+  }
+
+  #app:not(.panel-collapsed) #panel-backdrop {
+    display: block;
+  }
+
+  /* Toggle button: always at top-left, no shift */
+  #app:not(.panel-collapsed) #panel-toggle {
+    left: 12px;
+  }
+
+  /* Workspace fills the full width */
+  #workspace {
+    width: 100vw;
+  }
+}
+
+/* ---------- Workspace ---------- */
+#workspace {
+  flex: 1;
+  position: relative;
+  overflow: hidden;  /* panning is done by translating #canvas, not scrolling */
+  background:
+    radial-gradient(ellipse at 20% 20%, #0d1f3c 0%, transparent 60%),
+    var(--bg-app);
+  background-image:
+    linear-gradient(rgba(56, 139, 253, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 139, 253, 0.04) 1px, transparent 1px);
+  background-size: 30px 30px;
+  /* cursor changes to grabbing while panning — set by JS */
+  cursor: default;
+  touch-action: none; /* we handle all touch gestures ourselves */
+  min-width: 0;       /* allow flex child to shrink below content size */
+}
+
+#workspace.panning {
+  cursor: grabbing;
+}
+
+#hint-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--text-muted);
+  font-size: 15px;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  text-align: center;
+  /* hint sits above the canvas in the viewport, not panned */
+  z-index: 2;
+}
+
+/* ---------- Canvas (panning surface) ---------- */
+#canvas {
+  position: absolute;
+  /* Large virtual canvas so components can be placed far out */
+  width: 4000px;
+  height: 3000px;
+  top: 0;
+  left: 0;
+  /* transform: translate(panX, panY) applied by JS */
+  will-change: transform;
+}
+
+/* SVG wire layer — covers the entire canvas */
+#wire-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* individual paths get pointer-events: stroke */
+  overflow: visible;
+}
+
+/* ---------- Component Nodes ---------- */
+.component-node {
+  position: absolute;
+  background: var(--bg-component);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 20px 10px 20px;
+  cursor: grab;
+  user-select: none;
+  min-width: 90px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  touch-action: none; /* required for Pointer Events drag */
+}
+
+.component-node:hover {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(56, 139, 253, 0.15);
+  z-index: 10;
+}
+
+.component-node.selected {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.25);
+}
+
+/* Replace-target highlight: distinct orange outline, different from wire-insert yellow */
+.component-node.replace-target {
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 0 3px rgba(210, 153, 34, 0.35);
+  z-index: 11;
+}
+
+.component-node .node-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-label);
+  text-align: center;
+  margin-bottom: 4px;
+  pointer-events: none;
+}
+
+/* Delete (×) button */
+.delete-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent-red);
+  color: #fff;
+  border: none;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  cursor: pointer;
+  display: none;
+  z-index: 20;
+  padding: 0;
+}
+
+.component-node:hover .delete-btn,
+.component-node.selected .delete-btn {
+  display: block;
+}
+
+/* ---------- Connection Points ---------- */
+.conn-point {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg-app);
+  border: 2px solid var(--text-muted);
+  transform: translate(-50%, -50%);
+  cursor: crosshair;
+  z-index: 5;
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+  pointer-events: all;
+}
+
+.conn-point:hover {
+  border-color: var(--accent-blue);
+  background: var(--accent-blue);
+  transform: translate(-50%, -50%) scale(1.3);
+}
+
+/* Output point: right edge */
+.conn-point.output {
+  border-color: var(--accent-green);
+}
+
+.conn-point.output:hover {
+  background: var(--accent-green);
+}
+
+/* Input point highlighted during wiring mode */
+.conn-point.input.highlight-target {
+  border-color: var(--accent-green);
+  background: var(--accent-green);
+  transform: translate(-50%, -50%) scale(1.4);
+  animation: pulse 0.8s infinite alternate;
+}
+
+@keyframes pulse {
+  from { box-shadow: 0 0 0 0 var(--accent-green); }
+  to   { box-shadow: 0 0 0 6px transparent; }
+}
+
+/* ---------- Switch component ---------- */
+.switch-body {
+  width: 52px;
+  height: 26px;
+  border-radius: 13px;
+  background: var(--switch-off);
+  border: 2px solid var(--border);
+  position: relative;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+  margin: 2px auto 0;
+}
+
+.switch-body.on {
+  background: var(--switch-on);
+  border-color: var(--switch-on);
+}
+
+.switch-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  transition: left var(--transition);
+  pointer-events: none;
+}
+
+.switch-body.on .switch-thumb {
+  left: 27px;
+}
+
+.switch-value {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 3px;
+  pointer-events: none;
+}
+
+/* ---------- LED component ---------- */
+.led-body {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--led-off);
+  border: 2px solid var(--border);
+  margin: 2px auto 0;
+  transition: background var(--transition), box-shadow var(--transition), border-color var(--transition);
+  pointer-events: none;
+}
+
+.led-body.on {
+  background: var(--led-on);
+  border-color: var(--led-on);
+  box-shadow: 0 0 12px 4px var(--led-glow), 0 0 24px 8px #1a4a2a;
+}
+
+/* ---------- Gate components ---------- */
+.gate-body {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  text-align: center;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  /* Vertically fill the node so the text is centred between the connection points */
+  padding: 10px 0;
+  line-height: 1;
+}
+
+/* ---------- SVG Wire styles ---------- */
+.wire-path-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.wire-path-vis {
+  fill: none;
+  stroke: var(--wire-off);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  pointer-events: none;
+  transition: stroke 0.2s;
+}
+
+.wire-path-vis.on {
+  stroke: var(--wire-on);
+}
+
+.wire-path-vis.selected {
+  stroke: var(--wire-selected);
+  stroke-width: 3.5;
+}
+
+/* Wire highlighted as an insert target while dragging a gate over it */
+.wire-path-vis.insert-target {
+  stroke: var(--accent-yellow);
+  stroke-width: 3.5;
+  stroke-dasharray: 8 4;
+}
+
+/* Temporary wire while connecting */
+#temp-wire {
+  fill: none;
+  stroke: var(--accent-blue);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+/* ==========================================================
+   CARA PAKAI (Help) PANEL
+   ========================================================== */
+
+/* Panel sits as a flex sibling between the left panel and the workspace,
+   or as a fixed overlay on mobile. It is collapsible. */
+#help-panel {
+  width: 260px;
+  min-width: 260px;
+  max-height: 100vh;
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border);
+  padding: 16px 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  flex-shrink: 0;
+  transition: transform var(--transition), margin-right var(--transition);
+  z-index: 200;
+  order: 3; /* flex order: left-panel | workspace | help-panel */
+}
+
+/* Collapsed: slide off to the right */
+#app.help-collapsed #help-panel {
+  transform: translateX(260px);
+  margin-right: -260px;
+}
+
+.help-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.help-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  letter-spacing: 0.02em;
+  margin-bottom: 2px;
+}
+
+.help-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+#help-toggle {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  width: 22px;
+  height: 22px;
+  font-size: 11px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+#help-toggle:hover {
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+}
+
+/* Numbered steps */
+.help-steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+}
+
+.help-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.step-badge {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.step-text {
+  font-size: 12px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.step-text strong {
+  color: var(--accent-green);
+}
+
+/* Tips section */
+.help-tips {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.tips-heading {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.help-tips ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.help-tips li {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  padding-left: 10px;
+  position: relative;
+}
+
+.help-tips li::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  color: var(--border);
+}
+
+/* Help re-open button (floating in workspace, visible only when panel collapsed) */
+#help-open {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  color: var(--accent-blue);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+#help-open:hover {
+  border-color: var(--accent-blue);
+  background: var(--bg-surface);
+}
+
+/* Show the re-open button only when the help panel is collapsed */
+#app.help-collapsed #help-open {
+  display: flex;
+}
+
+/* ----- Mobile: help panel becomes a fixed right-side overlay ----- */
+@media (max-width: 767px) {
+  #help-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    border-left: 1px solid var(--border);
+    box-shadow: none;
+  }
+
+  #app.help-collapsed #help-panel {
+    transform: translateX(260px);
+    margin-right: 0;
+    box-shadow: none;
+  }
+
+  #app:not(.help-collapsed) #help-panel {
+    box-shadow: -4px 0 24px rgba(0,0,0,0.6);
+  }
+}
+
+/* ==========================================================
+   TRUTH TABLE PANEL
+   ========================================================== */
+
+#truth-panel {
+  width: 240px;
+  min-width: 240px;
+  max-height: 100vh;
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border);
+  padding: 14px 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  flex-shrink: 0;
+  transition: transform var(--transition), margin-right var(--transition);
+  z-index: 200;
+  order: 2; /* between workspace and help-panel */
+}
+
+/* Hidden: slide off to the right */
+#app.truth-hidden #truth-panel {
+  transform: translateX(240px);
+  margin-right: -240px;
+}
+
+.truth-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.truth-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  letter-spacing: 0.02em;
+}
+
+#truth-close {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  width: 22px;
+  height: 22px;
+  font-size: 11px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+#truth-close:hover {
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+}
+
+#truth-body {
+  overflow-x: auto;
+}
+
+.truth-msg {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.truth-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+
+.truth-table th,
+.truth-table td {
+  padding: 4px 8px;
+  text-align: center;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.truth-table thead tr {
+  background: var(--bg-surface);
+}
+
+.truth-table th {
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+.truth-table .th-led {
+  color: var(--accent-green);
+}
+
+.truth-table tbody tr:hover {
+  background: var(--bg-component);
+}
+
+/* Active row — matches current switch values */
+.truth-table tbody tr.truth-active {
+  background: rgba(56, 139, 253, 0.12);
+  outline: 1px solid var(--accent-blue);
+  outline-offset: -1px;
+}
+
+/* LED output = 1 */
+.truth-table .td-one {
+  color: var(--accent-green);
+  font-weight: 700;
+}
+
+@media (max-width: 767px) {
+  #truth-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    box-shadow: none;
+  }
+
+  #app.truth-hidden #truth-panel {
+    transform: translateX(240px);
+    margin-right: 0;
+  }
+
+  #app:not(.truth-hidden) #truth-panel {
+    box-shadow: -4px 0 24px rgba(0,0,0,0.6);
+  }
+}
+
+/* ==========================================================
+   SYNTHETIC SCROLLBARS
+   ========================================================== */
+
+/* Horizontal track — bottom edge of workspace */
+#sb-h-track {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 10px;   /* leave corner for vertical scrollbar */
+  height: 8px;
+  background: rgba(255,255,255,0.04);
+  border-top: 1px solid var(--border);
+  z-index: 50;
+  display: none; /* shown by JS when needed */
+  cursor: default;
+}
+
+/* Vertical track — right edge of workspace */
+#sb-v-track {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 8px;  /* leave corner */
+  width: 8px;
+  background: rgba(255,255,255,0.04);
+  border-left: 1px solid var(--border);
+  z-index: 50;
+  display: none;
+  cursor: default;
+}
+
+#sb-h-thumb {
+  position: absolute;
+  top: 1px;
+  height: 6px;
+  min-width: 24px;
+  border-radius: 3px;
+  background: var(--text-muted);
+  opacity: 0.5;
+  cursor: grab;
+  transition: opacity var(--transition), background var(--transition);
+}
+
+#sb-v-thumb {
+  position: absolute;
+  left: 1px;
+  width: 6px;
+  min-height: 24px;
+  border-radius: 3px;
+  background: var(--text-muted);
+  opacity: 0.5;
+  cursor: grab;
+  transition: opacity var(--transition), background var(--transition);
+}
+
+#sb-h-thumb:hover, #sb-h-thumb:active,
+#sb-v-thumb:hover, #sb-v-thumb:active {
+  opacity: 0.85;
+  background: var(--accent-blue);
+}
+
+/* Scrollbar tipis bertema gelap untuk semua area */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2b3a55 transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: #2b3a55; border-radius: 4px; }
+*::-webkit-scrollbar-thumb:hover { background: #3d5280; }
+*::-webkit-scrollbar-button { display: none; }
+
+.gate-tag {
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  line-height: 1;
+  color: var(--text-muted);
+  pointer-events: none;
+}
